@@ -34,7 +34,25 @@ Collect the following information:
 - **Expected behavior**: What should have happened
 - **Actual behavior**: What actually happened
 
-### Step 2: Quick Triage
+### Step 2: Locate the workflows-engine
+
+Before searching, discover the workflows-engine path dynamically:
+
+```bash
+# 1. Find carto CLI location
+which carto
+
+# 2. Follow symlink to find carto-cli source
+readlink $(which carto)
+
+# 3. From the carto-cli directory, check package.json for workflows-engine path
+cat <CARTO_CLI_DIR>/package.json | grep workflows-engine
+
+# 4. Resolve the relative path to get the absolute workflows-engine path
+realpath <CARTO_CLI_DIR>/<RELATIVE_PATH_FROM_DEPENDENCY>
+```
+
+### Step 3: Quick Triage
 
 Explore the workflows-engine codebase to identify the likely source:
 
@@ -51,14 +69,14 @@ Identify:
 - **Function/method**: The function where the error occurs
 - **Component**: If component-specific, which component is involved
 
-### Step 3: Create Reproduction Materials
+### Step 4: Create Reproduction Materials
 
 Save copies of any files needed to reproduce the issue:
 - Workflow JSON file (if applicable)
 - Relevant configuration
 - Exact commands to reproduce
 
-### Step 4: Write the Bug Report
+### Step 5: Write the Bug Report
 
 Create a markdown file in `./bug-reports/` with:
 
