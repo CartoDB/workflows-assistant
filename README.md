@@ -74,7 +74,22 @@ git clone https://github.com/CartoDB/workflows-assistant.git
 cd workflows-assistant
 ```
 
-### 5. Authenticate with CARTO
+### 5. Configure environment variables
+
+Copy the `.env.template` file to `.env` and fill in the required values:
+
+```bash
+cp .env.template .env
+# Edit .env with your configuration values
+```
+
+Before using the assistant, source the environment file to load the variables:
+
+```bash
+source .env
+```
+
+### 6. Authenticate with CARTO
 
 ```bash
 carto auth login
