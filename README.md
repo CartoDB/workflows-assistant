@@ -70,8 +70,11 @@ npm run bundle
 The bundled CLI will be available at `bundle/carto`. Add it to your PATH or create a symlink:
 
 ```bash
-# Option: Create symlink to make 'carto' available globally
+# Option A: Create symlink to make 'carto' available globally, you may need sudo
 ln -s $(pwd)/bundle/carto /usr/local/bin/carto
+
+# Option B: symlink to the local bin folder if you have it configured
+ln -s $(pwd)/bundle/carto $HOME/.local/bin/carto
 ```
 
 ### 4. Clone this repository
