@@ -45,8 +45,15 @@ git clone \
   -b feat/workflows-validation-for-assistant \
   https://github.com/CartoDB/cloud-native.git
 
+# Install cloud-native dependencies (required for building workflows-engine)
+cd cloud-native
+# Review the cloud-native README
+nvm install && nvm use
+corepack enable && yarn install
+cd ..
+
 # Clone the data-ps-team repository
-git clone
+git clone \
   -b feature/workflows-engine-cli \
   https://github.com/CartoDB/data-ps-team.git
 
