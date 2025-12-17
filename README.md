@@ -120,7 +120,7 @@ Press `Tab` to cycle through agents:
 - **Plan** - Planning mode
 - **Workflows-Assistant** - The CARTO Workflows assistant
 
-Select **Workflows-Assistant** to test the workflows agent.
+Select **Workflows-Assistant** to test the workflows agent. Before starting, please make sure that you are using Opus 4.5 via Vertex AI by running the `/models` command.
 
 
 ## Contributing
@@ -145,4 +145,10 @@ carto connections list
 **Verify CLI is working**
 ```bash
 carto workflows-engine components list --provider bigquery
+```
+
+**Make sure that the OpenCode colorscheme is correct**
+```
+# Use this command from OpenCode
+/theme
 ```
