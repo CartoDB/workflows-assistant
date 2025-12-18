@@ -163,7 +163,7 @@ After creating the bug report:
 
 If called with:
 - Error: `Column '[{"column":"accident_id"' not found in source schema`
-- Command: `npm run workflows-engine -- validate workflow.json --connection carto_dw`
+- Command: `carto workflows validate workflow.json --connection carto_dw`
 
 You would:
 1. Search for "not found in source schema" in the codebase

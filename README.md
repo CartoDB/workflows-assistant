@@ -52,13 +52,13 @@ nvm install && nvm use
 corepack enable && yarn install
 cd ..
 
-# Clone the data-ps-team repository
+# Clone the carto-cli repository
 git clone \
-  -b feature/workflows-engine-cli \
-  https://github.com/CartoDB/data-ps-team.git
+  -b feature/workflows-engine-validation \
+  https://github.com/CartoDB/carto-cli.git
 
 # Specify the custom path to cloud-native to link workflows-engine
-cd data-ps-team/code/carto-cli
+cd carto-cli
 ./scripts/setup-engine.sh /path/to/cloud-native
 
 # Build the CLI
@@ -144,7 +144,7 @@ carto connections list
 
 **Verify CLI is working**
 ```bash
-carto workflows-engine components list --provider bigquery
+carto workflows components list --provider bigquery
 ```
 
 **Make sure that the OpenCode colorscheme is correct**
