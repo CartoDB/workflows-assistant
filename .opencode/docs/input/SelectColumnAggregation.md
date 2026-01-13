@@ -165,6 +165,29 @@ If you get validation errors:
 3. **Verify column names**: Use `carto connections describe` to get exact names
 4. **Check method validity**: Match method to column data type
 
+## Output Column Naming
+
+**Important**: GroupBy output columns are renamed using the pattern `{column}_{method}`.
+
+| Input | Aggregation | Output Column |
+|-------|-------------|---------------|
+| `population` | `sum` | `population_sum` |
+| `area` | `avg` | `area_avg` |
+| `geom` | `any` | `geom_any` |
+| `count` | `max` | `count_max` |
+
+Downstream nodes must reference the **renamed columns**, not the original names.
+
+### Example
+
+```json
+// GroupBy with: "gi,any,p_value,any,district,any"
+// Outputs columns: gi_any, p_value_any, district_any
+
+// Downstream node must use:
+{ "name": "column", "type": "Column", "value": "gi_any" }  // Not "gi"
+```
+
 ## Related Types
 - `Column` - Simple column selection (used for GROUP BY columns)
 - `ColumnNumber` - Column + numeric weight pairs

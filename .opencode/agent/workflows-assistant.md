@@ -65,8 +65,8 @@ carto connections browse <conn> "<dataset>" | head -n 30
 carto sql query <conn> "SELECT * FROM table LIMIT 10"
 carto sql job <conn>
 carto workflows validate workflow.json
-carto workflows components list --provider bigquery
-carto workflows components get <name> --provider bigquery
+carto workflows components list --connection <conn> --json
+carto workflows components get <name> --connection <conn> --json
 ```
 
 ## Workflow Development Process
@@ -150,26 +150,38 @@ Save this as `workflow.json` and build from there.
 **ALWAYS use `--json` flag** when fetching component information. This provides structured output that is easier to parse and ensures you get complete schema details:
 
 ```bash
-# List all components for a provider
-carto workflows components list --provider bigquery --json
+# List all components for a connection
+carto workflows components list --connection <connection> --json
 
 # Get detailed component definition (ALWAYS use --json)
-carto workflows components get native.buffer --provider bigquery --json
+carto workflows components get native.buffer --connection <connection> --json
 
 # Get multiple components
-carto workflows components get native.buffer,native.spatialjoin --provider bigquery --json
+carto workflows components get native.buffer,native.spatialjoin --connection <connection> --json
 ```
+
+**Note**: The `--connection` flag is required for component commands. There is no `--provider` flag.
 
 <critical_rule name="always-use-json-for-components">
 Never omit `--json` when using `components get`. The JSON output contains the full component schema including input/output definitions, types, and constraints that are essential for building correct workflow nodes.
+</critical_rule>
+
+<critical_rule name="check-component-documentation">
+**After selecting components**, always verify them before building nodes. This prevents using hallucinated or incorrect component names.
+
+1. **Verify the component exists via CLI**: Run `carto workflows components get <name> --connection <conn> --json` to confirm the component is real and get its schema. The CLI is the source of truth for component existence.
+2. **Check for documented gotchas**: Look for a matching file in `.opencode/docs/components/` (e.g., `buffer.md` for `native.buffer`). Not all components have documentation—only those with known gotchas.
+3. **If the CLI returns no schema**: The component does not exist. Search for similar components using `carto workflows components list --connection <conn> --json` or ask the user for clarification.
+
+Never assume a component exists based on naming conventions alone—always verify with the CLI first.
 </critical_rule>
 
 #### Handling Missing Component Schemas
 
 When retrieving a component, if the schema is not available (empty or missing definition), troubleshoot as follows:
 
-1. **Verify the component name**: Run `carto workflows components list --provider <provider> --json` and check if the component exists in the list
-2. **Check the provider**: The component might exist for a different provider. Try other providers (bigquery, snowflake, redshift, postgres, databricks)
+1. **Verify the component name**: Run `carto workflows components list --connection <connection> --json` and check if the component exists in the list
+2. **Check for typos**: Component names are case-sensitive and use dot notation (e.g., `native.buffer`)
 3. **Check for aliases**: Some components have alternative names. Search for similar components using partial names
 4. **Report to user**: If the schema is truly unavailable, inform the user that this component cannot be used reliably and suggest alternatives
 
@@ -182,6 +194,18 @@ Always prefer using high-level workflow components instead of writing raw SQL. O
 3. A complex transformation cannot be expressed with available components
 
 High-level components provide better maintainability, visual clarity in the workflow editor, and consistent error handling. Before writing SQL, always check if a combination of existing components can achieve the goal.
+</design_principle>
+
+<design_principle>
+**Check component output schemas before building downstream nodes.** Some components transform column names or drop columns:
+
+- `native.getisord`: Renames index column to `index`, outputs only `index`, `gi`, `p_value`
+- `native.distinct`: Only outputs the distinct column(s), drops all others
+- `native.groupby`: Renames columns to `{column}_{method}` format
+- `native.h3boundary`: Adds geometry column as `{h3_column}_geo`
+- `native.buffer`: Adds geometry column as `geom_buffer`
+
+After adding a transformation node, validate and check the output schema before referencing columns in downstream nodes. When unsure, use `carto workflows to-sql --dry-run` to inspect the generated SQL.
 </design_principle>
 
 #### Common Components
@@ -257,7 +281,7 @@ CARTO Workflows use a **left-to-right** layout. Data flows from left to right on
 
 #### Complete Workflow Example
 
-See `docs/examples/filter-and-count.md` for a complete workflow JSON example.
+See `.opencode/docs/examples/filter-and-count.md` for a complete workflow JSON example.
 
 ### Step 6: Generate and Execute SQL Locally
 
@@ -314,7 +338,7 @@ This returns a workflow ID. View and execute at: `https://app.carto.com/workflow
 
 ## Input Parameter Types
 
-Detailed documentation for each input parameter type is available in `docs/input/`:
+Detailed documentation for each input parameter type is available in `.opencode/docs/input/`:
 
 - `Boolean.md`
 - `Column.md`
@@ -355,7 +379,7 @@ Detailed documentation for each input parameter type is available in `docs/input
 
 ## Troubleshooting
 
-See `docs/troubleshooting/`:
+See `.opencode/docs/troubleshooting/`:
 - `validation.md` - Validation error patterns and resolutions
 - `execution.md` - Execution error patterns and debugging
 
@@ -363,20 +387,24 @@ See `docs/troubleshooting/`:
 
 ## Known Issues & Gotchas
 
-See `docs/components/` for component-specific gotchas:
-- `buffer.md` - Output column naming
+See `.opencode/docs/components/` for component-specific gotchas:
+- `buffer.md` - Output column naming (`geom_buffer`)
 - `spatialjoin.md` - Required column mappings
+- `getisord.md` - Renames index column to `index`
+- `distinct.md` - Only outputs distinct column(s)
+- `h3boundary.md` - Geometry column naming (`{column}_geo`)
 
-See `docs/cli/` for CLI gotchas:
+See `.opencode/docs/cli/` for CLI gotchas:
 - `to-sql.md` - Connection flag not supported
 - `browse.md` - Page size not working
 - `auth.md` - Token expiration
+- `components.md` - Requires `--connection` flag
 
 ---
 
 ## Example Interactions
 
-See `docs/examples/`:
+See `.opencode/docs/examples/`:
 - `bike-accidents-near-parkings.md` - Full walkthrough with buffer and spatial join
 - `filter-and-count.md` - Simple filter and count workflow
 
@@ -384,7 +412,7 @@ See `docs/examples/`:
 
 ## Protocols
 
-See `docs/protocols/`:
+See `.opencode/docs/protocols/`:
 - `bug-report.md` - When and how to report engine bugs
 - `model-feedback.md` - Documenting improvement opportunities
 
@@ -392,16 +420,32 @@ See `docs/protocols/`:
 
 ## Reference Documentation
 
-The `docs/` directory contains detailed reference documentation:
+The `.opencode/docs/` directory contains detailed reference documentation:
 
-- `docs/input/` - Input parameter type syntax (21 files)
-- `docs/components/` - Component-specific gotchas
-- `docs/cli/` - CLI command gotchas
-- `docs/troubleshooting/` - Error patterns and resolutions
-- `docs/examples/` - Complete workflow examples
-- `docs/protocols/` - Bug reporting and feedback processes
+- `.opencode/docs/input/` - Input parameter type syntax (21 files)
+- `.opencode/docs/components/` - Component-specific gotchas
+- `.opencode/docs/cli/` - CLI command gotchas
+- `.opencode/docs/troubleshooting/` - Error patterns and resolutions
+- `.opencode/docs/examples/` - Complete workflow examples
+- `.opencode/docs/protocols/` - Bug reporting and feedback processes
 
 Consult these files when you need detailed syntax or encounter issues with specific types, components, or commands.
+
+### CARTO CLI Reference
+
+For comprehensive CLI command documentation, load the `carto-cli` skill:
+
+```
+skill({ name: "carto-cli" })
+```
+
+This skill provides complete reference for:
+- Authentication commands (`auth status`, `auth login`, etc.)
+- Connection commands (`connections list`, `browse`, `describe`)
+- SQL commands (`sql query`, `sql job`)
+- Workflow commands (`workflows validate`, `to-sql`, `components`)
+- Import commands (`imports create`)
+- Common gotchas and quick reference tables
 
 ---
 

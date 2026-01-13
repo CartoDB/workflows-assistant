@@ -1,6 +1,6 @@
 ---
 name: session-wrapup
-description: Document learnings, errors, and improvement opportunities at the end of a workflow session
+description: End document - load me when the workflow is done
 ---
 
 # Session Wrap-up Protocol

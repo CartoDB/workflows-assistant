@@ -113,7 +113,7 @@ If not authenticated, login first with `carto auth login`.
    "
    ```
 
-For full documentation, read the SKILL.md at `.opencode/skill/carto-cli/SKILL.md`.
+For full documentation on CLI commands, run `carto --help` or `carto <command> --help`.
 
 ## Proactive Data Profiling
 
