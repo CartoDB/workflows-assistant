@@ -18,10 +18,10 @@ A complete workflow that reads a table, filters rows, and counts results.
         "name": "native.gettablebyname",
         "label": "Get POIs",
         "inputs": [
-          { "name": "tablename", "type": "String", "value": "project.dataset.points_of_interest" }
+          { "name": "source", "type": "String", "value": "project.dataset.points_of_interest" }
         ],
         "outputs": [
-          { "name": "result", "type": "Table" }
+          { "name": "out", "type": "View" }
         ]
       },
       "position": { "x": 100, "y": 100 }
@@ -33,11 +33,12 @@ A complete workflow that reads a table, filters rows, and counts results.
         "name": "native.where",
         "label": "Filter Restaurants",
         "inputs": [
-          { "name": "source", "type": "Table" },
-          { "name": "expression", "type": "String", "value": "category = 'restaurant'" }
+          { "name": "source", "type": "Table", "value": [] },
+          { "name": "expression", "type": "StringSql", "value": "category = 'restaurant'" }
         ],
         "outputs": [
-          { "name": "result", "type": "Table" }
+          { "name": "match", "type": "Table" },
+          { "name": "unmatch", "type": "Table" }
         ]
       },
       "position": { "x": 300, "y": 100 }
@@ -49,7 +50,7 @@ A complete workflow that reads a table, filters rows, and counts results.
         "name": "native.count",
         "label": "Count Restaurants",
         "inputs": [
-          { "name": "source", "type": "Table" }
+          { "name": "source", "type": "Table", "value": [] }
         ],
         "outputs": [
           { "name": "result", "type": "Table" }
@@ -63,14 +64,14 @@ A complete workflow that reads a table, filters rows, and counts results.
       "id": "edge-source-to-filter",
       "source": "source-pois",
       "target": "filter-restaurants",
-      "sourceHandle": "result",
+      "sourceHandle": "out",
       "targetHandle": "source"
     },
     {
       "id": "edge-filter-to-count",
       "source": "filter-restaurants",
       "target": "count-results",
-      "sourceHandle": "result",
+      "sourceHandle": "match",
       "targetHandle": "source"
     }
   ],
@@ -84,4 +85,5 @@ A complete workflow that reads a table, filters rows, and counts results.
 - **Descriptive edge IDs**: `edge-source-to-filter`
 - **Left-to-right positions**: x: 100 → 300 → 500
 - **Handle matching**: `sourceHandle` matches the output name, `targetHandle` matches the input name
-- **Table inputs have no value**: They receive data via edges
+- **Table inputs require empty array**: Use `"value": []` for Table inputs that receive data via edges
+- **Match component schemas**: Always verify input/output names with `carto workflows components get`
