@@ -21,7 +21,7 @@ A complete workflow that reads a table, filters rows, and counts results.
           { "name": "source", "type": "String", "value": "project.dataset.points_of_interest" }
         ],
         "outputs": [
-          { "name": "out", "type": "View" }
+          { "name": "out", "type": "Table" }
         ]
       },
       "position": { "x": 100, "y": 100 }
@@ -33,7 +33,7 @@ A complete workflow that reads a table, filters rows, and counts results.
         "name": "native.where",
         "label": "Filter Restaurants",
         "inputs": [
-          { "name": "source", "type": "Table", "value": [] },
+          { "name": "source", "type": "Table" },
           { "name": "expression", "type": "StringSql", "value": "category = 'restaurant'" }
         ],
         "outputs": [
@@ -50,7 +50,7 @@ A complete workflow that reads a table, filters rows, and counts results.
         "name": "native.count",
         "label": "Count Restaurants",
         "inputs": [
-          { "name": "source", "type": "Table", "value": [] }
+          { "name": "source", "type": "Table" }
         ],
         "outputs": [
           { "name": "result", "type": "Table" }
@@ -83,7 +83,8 @@ A complete workflow that reads a table, filters rows, and counts results.
 
 - **Descriptive node IDs**: `source-pois`, `filter-restaurants`
 - **Descriptive edge IDs**: `edge-source-to-filter`
-- **Left-to-right positions**: x: 100 → 300 → 500
+- **Left-to-right positions**: x: 100 -> 300 -> 500
 - **Handle matching**: `sourceHandle` matches the output name, `targetHandle` matches the input name
-- **Table inputs require empty array**: Use `"value": []` for Table inputs that receive data via edges
+- **gettablebyname gotcha**: Input is `source`, output is `out`
+- **where outputs**: `match` and `unmatch` (not `result`)
 - **Match component schemas**: Always verify input/output names with `carto workflows components get`

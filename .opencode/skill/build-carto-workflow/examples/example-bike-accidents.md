@@ -16,7 +16,7 @@ User responds: "100 meters, connection is `my-bigquery`"
 
 ### 2. Find and explore the data
 
-If the user doesn't know the exact table names, **delegate to the `carto-table-finder` agent** to discover relevant tables.
+If the user doesn't know the exact table names, load the `find-tables` skill to discover relevant tables.
 
 Once tables are identified, confirm schemas:
 
@@ -32,7 +32,7 @@ Confirm both tables have geometry columns.
 Always use `--json` for full schema:
 
 ```bash
-carto workflows components get native.buffer --provider bigquery --json
+carto workflows components get native.buffer --connection my-bigquery --json
 ```
 
 ### 4. Create workflow JSON
@@ -59,17 +59,13 @@ Add source nodes, buffer, spatial join, count.
 After each change, validate:
 
 ```bash
-carto workflows validate workflow.json \
-  --connection my-bigquery \
-  --temp-location "project.dataset" \
-  --json
+carto workflows validate workflow.json --connection my-bigquery --json
 ```
 
 ### 6. Generate and review SQL
 
 ```bash
-carto workflows to-sql workflow.json \
-  --temp-location "project.dataset"
+carto workflows to-sql workflow.json --connection my-bigquery
 ```
 
 ### 7. Execute locally or upload
@@ -81,7 +77,7 @@ cat workflow.sql | carto sql job my-bigquery
 
 Or upload:
 ```bash
-carto workflows create --file workflow.json
+carto workflows create --file workflow.json --connection my-bigquery
 ```
 
 ### 8. Verify results and show to user
@@ -99,3 +95,10 @@ Confirm the results match expectations before finishing.
 ## Key Principle
 
 After adding each node, always validate. After execution, always verify results and show them to the user.
+
+## Components Used
+
+- `native.gettablebyname` - Load source tables
+- `native.buffer` - Create 100m buffer around parkings
+- `native.spatialjoin` - Find accidents intersecting buffers
+- `native.count` or `native.groupby` - Count results

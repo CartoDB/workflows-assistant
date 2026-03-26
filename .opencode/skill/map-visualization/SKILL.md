@@ -1,6 +1,6 @@
 ---
 name: map-visualization
-description: ALWAYS load this skill when the user needs visualization or a map
+description: Tips and useful information when an user wants to visualize in a map as result
 ---
 
 # Map Visualization in CARTO Workflows
