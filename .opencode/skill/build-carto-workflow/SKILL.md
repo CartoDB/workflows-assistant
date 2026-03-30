@@ -53,9 +53,9 @@ Component schemas, input type formats, and gotchas are served by the CLI — **n
 
 3. **Fetch input type formats** for the components you selected:
    ```bash
-   carto workflows inputs <name1>,<name2>,<name3> --connection <connection> --json
+   carto workflows inputs <component1>,<component2>,<component3> --connection <connection> --json
    ```
-   The response includes `format`, `examples`, and `pitfalls` for each input type used by those components. This is your reference for how to set parameter values.
+   Pass **component names** (e.g. `native.buffer,native.spatialjoin`), NOT input type names. The command returns `format`, `examples`, and `pitfalls` for each input type used by those components. This is your reference for how to set parameter values.
 
 4. **Design principles**:
    - Preserve identifier and spatial columns throughout
@@ -113,7 +113,7 @@ Component schemas, input type formats, and gotchas are served by the CLI — **n
   "schemaVersion": "1.0.0",
   "title": "Workflow Title",
   "description": "What this workflow does",
-  "connectionProvider": "bigquery",
+  "connectionProvider": "bigquery | snowflake | redshift | postgres | databricksWarehouse | oracle",
   "nodes": [],
   "edges": [],
   "variables": []
@@ -124,9 +124,11 @@ Component schemas, input type formats, and gotchas are served by the CLI — **n
 |-------|----------|-------------|
 | `schemaVersion` | Yes | Always `"1.0.0"` |
 | `title` | Yes | Display name |
-| `connectionProvider` | Yes | `bigquery`, `snowflake`, `redshift`, `postgres`, `databricks`, `oracle` |
+| `connectionProvider` | Yes | Must match the connection's provider: `bigquery`, `snowflake`, `redshift`, `postgres`, `databricksWarehouse`, `oracle` |
 | `nodes` | Yes | Array of workflow components |
 | `edges` | Yes | Array of connections between nodes |
+
+**Important**: The `connectionProvider` value must match the actual provider of the connection you use for validation and execution. Using the wrong value causes SQL generation to use the wrong dialect. Check provider with `carto connections get <conn> --json`.
 
 ### Node Structure
 
@@ -149,11 +151,13 @@ Component schemas, input type formats, and gotchas are served by the CLI — **n
 }
 ```
 
-- `id`: Unique identifier (use descriptive names)
-- `type`: Always `"generic"`
-- `data.name`: Component name from catalog
-- `data.version`: Include if not "1"
-- `position`: Layout coordinates (left-to-right, ~200px spacing)
+- `id`: Unique identifier (use descriptive names like `source-accidents`, `filter-type`)
+- `type`: Always `"generic"` for processing nodes. Source nodes (`native.gettablebyname`) also use `"generic"`.
+- `data.name`: Component name from catalog (e.g. `native.buffer`)
+- `data.version`: Component version as string. Include always — check the component schema for the current version.
+- `data.inputs`: Array of `{ "name": "...", "type": "...", "value": "..." }` objects. **Not** a key-value params object — must be an array.
+- `data.outputs`: Array of `{ "name": "...", "type": "Table" }` objects. Get exact names from component schema.
+- `position`: Required. Layout coordinates (left-to-right, ~200px spacing). Every node must have a position.
 
 ### Edge Structure
 
@@ -191,7 +195,7 @@ Reference with `{{variable_name}}` syntax.
 |---------|---------|
 | `carto workflows components list --connection <conn> --json` | List all available components |
 | `carto workflows components get <names> --connection <conn> --json` | Get component schemas with inputs, outputs, and `notes` (gotchas) |
-| `carto workflows inputs <names> --connection <conn> --json` | Get input type `format`, `examples`, and `pitfalls` for the types used by those components |
+| `carto workflows inputs <component-names> --connection <conn> --json` | Get input type `format`, `examples`, and `pitfalls` for the types used by those components. Pass **component names** (e.g. `native.buffer`), not input type names. |
 
 ### What to look for in the response
 
@@ -216,11 +220,58 @@ When things go wrong, see the [troubleshooting/](troubleshooting/) folder:
 
 | Error Pattern | Fix |
 |---------------|-----|
-| "column not found" | Check exact name with `carto connections describe` |
-| "table not found" | Verify FQN: `project.dataset.table` |
+| "column not found" | Check exact name with `carto connections describe` (note: Snowflake uppercases columns) |
+| "table not found" | Verify FQN format matches provider (see [providers/](providers/)) |
 | "connection failed" | Run `carto auth status`, then `carto auth login` |
 | Empty results (0 rows) | Filters too restrictive; check join keys; verify case sensitivity |
 | Validation passes but execution fails | Use `--connection` for full schema validation |
+
+---
+
+## Provider-Specific Notes
+
+Different data warehouse providers have different SQL dialects, table naming conventions, and known limitations. See the provider-specific guides:
+
+| Provider | Guide |
+|----------|-------|
+| BigQuery | [providers/bigquery.md](providers/bigquery.md) |
+| Snowflake | [providers/snowflake.md](providers/snowflake.md) |
+| Databricks | [providers/databricks.md](providers/databricks.md) |
+
+**Key differences**: Table FQN format, column casing, geometry handling, Analytics Toolbox path, schedule expression syntax, and SQL dialect. Always check the provider guide when working with a non-BigQuery connection.
+
+---
+
+## Common Pitfalls
+
+### ColumnsForJoin Input
+
+When using `ColumnsForJoin` inputs (e.g. in `native.joinv2`, `native.spatialjoin`), an empty array `[]` means **include ALL columns** from that side of the join. To select specific columns, list them explicitly as `[{"name":"col","joinname":"alias"}]`.
+
+### inputs Array Format
+
+Node inputs must be an **array** of `{ "name", "type", "value" }` objects:
+
+```json
+"inputs": [
+  { "name": "source", "type": "Table", "value": "" },
+  { "name": "column", "type": "Column", "value": "geom" }
+]
+```
+
+Do NOT use a params/key-value object format — the engine expects an array.
+
+### SelectColumnAggregation Format
+
+Comma-separated `column,method` pairs: `"population,sum,area,avg,name,count"`. You can aggregate the same column multiple times: `"N_BIKES,sum,N_BIKES,avg,N_BIKES,count"`.
+
+### View vs Table Output Types
+
+Some components (e.g. `gettablebyname`) return `"type": "View"` in their output schema, while downstream components expect `"type": "Table"` inputs. These are interchangeable for edge connections — you can connect a `View` output to a `Table` input.
+
+### Structure-Only Validation and AT Components
+
+Validating without `--connection` will fail for any component that depends on the Analytics Toolbox (H3, Quadbin, Getis-Ord, enrichment, etc.) because the `analyticsToolboxDataset` environment variable is only set when a connection is provided. Always use `--connection` for workflows with spatial analytics components.
 
 ---
 

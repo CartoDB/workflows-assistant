@@ -18,6 +18,14 @@ Error patterns and resolutions for `carto workflows validate` failures.
 
 ---
 
+## For Snowflake: Always Use --connection
+
+Structure-only validation (without `--connection`) will fail for any workflow using Analytics Toolbox components (H3, Quadbin, Getis-Ord, enrichment) because `analyticsToolboxDataset` is only set via the connection. Always validate with `--connection` for Snowflake workflows.
+
+Column name warnings (e.g. `geom` not found, available: `GEOM`) indicate Snowflake uppercase casing — update your column references to UPPERCASE.
+
+---
+
 ## Type Mismatch Warnings
 
 Column type mismatches (e.g., string instead of geography) are reported as **warnings**, not errors. The workflow is still "valid" but may fail at runtime.

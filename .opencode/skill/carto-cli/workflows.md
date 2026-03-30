@@ -161,6 +161,29 @@ carto workflows components get native.buffer,native.spatialjoin,native.groupby -
 
 **JSON output includes**: inputs, outputs, types, defaults, validation rules.
 
+## carto workflows inputs
+
+Get input type formats, examples, and pitfalls for the input types used by specific components.
+
+```bash
+carto workflows inputs <component-names>
+  --connection <name>       # Connection name (required)
+  --json                    # JSON output (always use this)
+```
+
+**Important**: Pass **component names** (e.g. `native.buffer,native.spatialjoin`), NOT input type names (e.g. `Table`, `Column`). The command resolves which input types those components use and returns their format details.
+
+**Examples**:
+```bash
+# Get input formats for buffer component
+carto workflows inputs native.buffer --connection my-bq --json
+
+# Multiple components
+carto workflows inputs native.buffer,native.spatialjoin,native.groupby --connection my-bq --json
+```
+
+**JSON output includes**: `format` (expected value shape), `examples` (concrete JSON snippets), `pitfalls` (common mistakes).
+
 ## carto workflows schedule
 
 Manage workflow schedules.

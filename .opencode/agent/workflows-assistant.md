@@ -30,9 +30,15 @@ Your primary responsibility is to help users design, build, validate, and deploy
 
 - **Component names**: `carto workflows components list --connection <conn> --json`
 - **Component schemas** (inputs, outputs, gotchas): `carto workflows components get <names> --connection <conn> --json`
-- **Input type formats** (format, examples, pitfalls): `carto workflows inputs <names> --connection <conn> --json`
+- **Input type formats** (format, examples, pitfalls): `carto workflows inputs <component-names> --connection <conn> --json` (pass component names like `native.buffer`, NOT input type names like `Table`)
 
 The `notes` field in component schemas contains non-obvious behavior (output column names, deprecated status, required-but-optional parameters). The `pitfalls` field in input types contains common mistakes. **Always read both before building.**
+
+---
+
+## Critical Rule: Check Provider
+
+Before building any workflow, determine the connection's provider with `carto connections get <conn> --json`. Set `connectionProvider` in the workflow JSON to match. Different providers have different SQL dialects, table FQN formats, column casing, and known limitations — check the provider-specific guide in `build-carto-workflow/providers/`.
 
 ---
 

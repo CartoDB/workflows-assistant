@@ -33,5 +33,30 @@ Quick reference for known quirks that are NOT covered by the CLI's component `no
 |-------|----------|
 | Edge not connecting | Verify handle names from component schema |
 | Component not found | Fetch catalog: `carto workflows components list --connection <conn> --json` |
-| Version mismatch | Include `"version": "2"` in node data if needed |
-| Layout issues | Always include `position: { x, y }` for each node |
+| Version mismatch | Always include `"version"` in node data — check schema for current version |
+| Layout issues | Always include `position: { x, y }` for each node — it's required |
+| `ColumnsForJoin` empty array | `[]` is valid and means "all columns". Use `[{"name":"col","joinname":"alias"}]` to select specific columns. |
+| `inputs` as object | Must be an array of `{name, type, value}`, not a key-value params object |
+| `workflows inputs` 404 | Pass component names (e.g. `native.buffer`), not input type names (e.g. `Table`) |
+
+---
+
+## Provider-Specific Gotchas
+
+### For Snowflake
+
+| Issue | Solution |
+|-------|----------|
+| Column names are UPPERCASE | Snowflake auto-uppercases unquoted identifiers. Use UPPERCASE in column references — including component-generated columns (e.g. `geom_buffer` → `GEOM_BUFFER`). |
+| `connectionProvider` mismatch | Must be `"snowflake"` — mismatches cause wrong SQL dialect |
+| Table FQN format | Use `DATABASE.SCHEMA.TABLE`, not `project.dataset.table` |
+| Structure-only validation fails for AT components | Use `--connection` instead — structure-only can't resolve `analyticsToolboxDataset` |
+
+### For BigQuery
+
+| Issue | Solution |
+|-------|----------|
+| Table FQN format | Use `project.dataset.table` |
+| Column casing | Preserves original case — must match exactly |
+
+See [providers/](../providers/) for complete provider-specific documentation.

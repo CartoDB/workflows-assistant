@@ -61,6 +61,13 @@ carto workflows create --file workflow.json --connection <connection>
 
 ---
 
+## For Snowflake: SQL Generation Notes
+
+- Verify `connectionProvider` is set to `"snowflake"` — a mismatch generates BigQuery SQL against a Snowflake connection
+- Column references in generated SQL will be uppercase — this is expected Snowflake behavior
+
+---
+
 ## Performance Tips
 
 1. **Filter early**: Apply filters as close to the source as possible
