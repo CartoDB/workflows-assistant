@@ -54,7 +54,7 @@ The `notes` field in component schemas contains non-obvious behavior (output col
 
 ## Critical Rule: Check Provider
 
-Before building any workflow, determine the connection's provider with `carto connections get <conn> --json`. Set `connectionProvider` in the workflow JSON to match. Different providers have different SQL dialects, table FQN formats, column casing, and known limitations — check the provider-specific guide in the `build-carto-workflow` skill under `providers/`.
+Before building any workflow, determine the connection's provider with `carto connections list --search <name> --json` (note: `carto connections get` requires a UUID, not a name). Set `connectionProvider` in the workflow JSON to match. Different providers have different SQL dialects, table FQN formats, column casing, and known limitations — check the provider-specific guide in the `build-carto-workflow` skill under `providers/`.
 
 ---
 

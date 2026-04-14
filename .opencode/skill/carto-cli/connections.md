@@ -22,11 +22,13 @@ carto connections list --json             # JSON output for parsing
 
 ## carto connections get
 
-Get detailed connection info by ID.
+Get detailed connection info by **UUID** (not name).
 
 ```bash
-carto connections get <id>
+carto connections get <uuid>
 ```
+
+**Gotcha**: This command requires the connection's UUID, not its name. To find a connection by name, use `carto connections list --search <name> --json` instead.
 
 ## carto connections browse
 

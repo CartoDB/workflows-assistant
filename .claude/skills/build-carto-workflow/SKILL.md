@@ -128,7 +128,7 @@ Component schemas, input type formats, and gotchas are served by the CLI — **n
 | `nodes` | Yes | Array of workflow components |
 | `edges` | Yes | Array of connections between nodes |
 
-**Important**: The `connectionProvider` value must match the actual provider of the connection you use for validation and execution. Using the wrong value causes SQL generation to use the wrong dialect. Check provider with `carto connections get <conn> --json`.
+**Important**: The `connectionProvider` value must match the actual provider of the connection you use for validation and execution. Using the wrong value causes SQL generation to use the wrong dialect. Check provider with `carto connections list --search <name> --json` (note: `carto connections get` requires a UUID, not a name).
 
 ### Node Structure
 
