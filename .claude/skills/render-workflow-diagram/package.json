@@ -1,0 +1,9 @@
+{
+  "name": "render-workflow-diagram",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Renders CARTO Workflow DAGs as Unicode box-art diagrams in the terminal",
+  "dependencies": {
+    "@hpcc-js/wasm-graphviz": "^1.21.0"
+  }
+}
