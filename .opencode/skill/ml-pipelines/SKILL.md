@@ -79,14 +79,6 @@ For pre-trained ONNX models, use the `importmodel` + `predict` path. This skips 
 | SF Classification (churn) | Snowflake | Classification | [sf_ml_classification.sql](sf_ml_classification.sql) |
 | BQ Forecast (hotel revenue) | BigQuery | Forecasting | [bq_ml_forecast.sql](bq_ml_forecast.sql) |
 
-Additional examples available in the project root:
-
-| File | Provider | Mode |
-|---|---|---|
-| `bq_ml_create_regression_model.sql` | BigQuery | Regression |
-| `bq_ml_import.sql` | BigQuery | Import (ONNX) |
-| `sf_ml_forecasting.sql` | Snowflake | Forecasting |
-
 ## Common Variations
 
 | Variation | How to Handle |

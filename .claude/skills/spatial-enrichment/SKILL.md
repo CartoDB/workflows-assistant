@@ -93,15 +93,6 @@ Templates included in this skill folder (from the CARTO Workflows template repos
 | [enrich_points.sql](enrich_points.sql) | Filter points -> ENRICH_POINTS | Enrich point locations with polygon-based risk data |
 | [estimate_population_around_retail_stores.sql](estimate_population_around_retail_stores.sql) | Points -> Buffer -> H3 polyfill -> JOIN -> GROUP BY | Full entity-level enrichment with re-aggregation |
 
-Additional examples available in the project root:
-
-| File | Notes |
-|------|-------|
-| `buffer_enrich_quadbin.sql` | Quadbin-based buffer enrichment |
-| `enrich_polygon.sql` | Direct polygon enrichment |
-| `enrich_trade_areas_h3.sql` | Trade area enrichment with H3 |
-| `estimate_population_around_cell_towers.sql` | Cell tower population estimation |
-
 ---
 
 ## Common Variations

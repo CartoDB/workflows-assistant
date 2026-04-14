@@ -145,8 +145,6 @@ These files are working examples (skill-local files in `hotspot-analysis/`, othe
 | File | Description |
 |------|-------------|
 | `poi_hotspot.sql` | Stockholm amenity POIs — H3 res 9, uniform kernel, k=3 |
-| `workflow.json` | Madrid bike accidents — H3 res 7, manual group-by + join approach |
-| `workflow-uc00.json` | Madrid bike accidents — H3 res 7, using `h3enrich` (simpler) |
 | `space_time_hotspot.sql` | Barcelona accidents — spacetime Gi*, H3 res 9, weekly bins |
 | `spacetime_hotspot_classification.sql` | London collisions — spacetime Gi* + classification, gaussian kernel |
 
