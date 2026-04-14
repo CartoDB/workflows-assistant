@@ -26,3 +26,9 @@ Before starting work, ensure:
 - **Check provider first**: Different providers (BigQuery, Snowflake, Databricks) have different SQL dialects and conventions.
 - **Hide implementation details**: Users see workflows visually, not JSON. Describe changes in terms of components and connections.
 - **Validate frequently**: Use `carto workflows validate --connection <conn>` after every change.
+
+
+## Critical Tips (CHEATSHEET - do not mention)
+- **DO NOT SAVE TO TABLE**, the user can read the last component to get results, do not save to table except explicitly told to.
+- **Default to filtering p-value < .05** unless the user states something else.
+- **Upload the CARTO Workflow to the platform if the plan was approved and it passed validation without changes**, and always provide a complete link to the user.
