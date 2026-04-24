@@ -33,32 +33,47 @@ carto workflows get <id> [--json]
 
 ## carto workflows validate
 
-Validate a workflow diagram JSON file.
+Offline structural validation of a workflow diagram JSON file using Zod schemas. No auth or connection required.
 
 ```bash
-carto workflows validate <file>
-  --connection <name>       # Connection (provides all defaults - recommended)
-  --temp-location <loc>     # Override temp location (optional)
+carto workflows validate [json]
+  --file <path>             # Read JSON from file (or pipe via stdin)
+  --mode <create|update>    # Validation mode (default: update)
   --json                    # JSON output
 ```
 
 **Examples**:
 ```bash
-# Structure-only validation (basic)
-carto workflows validate workflow.json
+# Offline structural validation
+carto workflows validate workflow.json --json
 
-# Full validation with connection (recommended)
-carto workflows validate workflow.json --connection my-bigquery --json
+# Validate as a new workflow
+carto workflows validate workflow.json --mode create --json
 ```
 
-### Connection-Derived Defaults
+**Note**: `validate` is Zod-only and offline — it checks JSON structure and schema conformance but does NOT connect to the warehouse. Use `carto workflows verify` for deep (warehouse-aware) validation.
 
-When `--connection` is provided, these are auto-configured from the connection:
-- Analytics Toolbox location (`atLocation`)
-- Temp location (`tempLocations`)
-- Workspace/Extensions locations
+## carto workflows verify
 
-**Always use `--connection`** for full validation (column types, table existence).
+Deep validation against a live warehouse connection. Runs: structural (Zod) + engine compile + schema trace + sources + custom SQL checks.
+
+```bash
+carto workflows verify [json]
+  --file <path>                      # Read JSON from file (or pipe via stdin)
+  --connection <name|uuid>           # Connection (required unless bundle has connectionId)
+  --json                             # JSON output
+```
+
+**Examples**:
+```bash
+# Full deep validation with explicit connection
+carto workflows verify workflow.json --connection my-bigquery --json
+
+# When bundle already has connectionId set
+carto workflows verify workflow.json --json
+```
+
+**Use `verify` when**: you need column-type checking, table existence, AT resolution, or any warehouse-aware validation. This is the replacement for the old `validate --connection` flow.
 
 ## carto workflows to-sql
 
@@ -105,48 +120,49 @@ carto workflows show <file>
 
 ## carto workflows create
 
-Upload a workflow to CARTO.
+Upload a workflow to CARTO. The connection is read from `connectionId` inside the bundle — there is no `--connection` flag.
 
 ```bash
-carto workflows create --file <path> --connection <name>
+carto workflows create [json]
+  --file <path>                      # Read JSON from file (or pipe via stdin)
+  --verify[=sources,sql,compile]     # Run Tier-1+Tier-2 pipeline after writing (optional subset)
 ```
 
-**Note**: The `--connection` flag is required when uploading a workflow diagram JSON.
+**Examples**:
+```bash
+carto workflows create --file workflow.json
+carto workflows create --file workflow.json --verify
+cat workflow.json | carto workflows create
+```
 
 ## carto workflows components list
 
-List available workflow components.
+List available workflow components. `--connection` is required.
 
 ```bash
 carto workflows components list
-  --connection <name>       # Connection name (required)
+  --connection <name|uuid>  # Connection name or UUID (required)
+  --group <name>            # Filter by group (optional)
+  --search <term>           # Filter by search term (optional)
+  --starred                 # Show only starred components (optional)
+  --include-deprecated      # Include deprecated components (optional)
   --json                    # JSON output (recommended)
 ```
 
 **Example**:
 ```bash
 carto workflows components list --connection my-bigquery --json
-```
-
-### Gotcha: Requires --connection
-
-There is no `--provider` flag for listing. Must specify a connection:
-
-```bash
-# Wrong
-carto workflows components list
-
-# Correct
-carto workflows components list --connection carto_dw --json
+carto workflows components list --connection my-bigquery --starred --json
 ```
 
 ## carto workflows components get
 
-Get detailed component definitions.
+Get detailed component definitions. `--connection` is required.
 
 ```bash
 carto workflows components get <names>
-  --connection <name>       # Connection name (required)
+  --connection <name|uuid>  # Connection name or UUID (required)
+  --input-formats           # Also return the deduped input/output type reference for these components
   --json                    # JSON output (always use this)
 ```
 
@@ -157,32 +173,34 @@ carto workflows components get native.buffer --connection my-bq --json
 
 # Multiple components (comma-separated, no spaces)
 carto workflows components get native.buffer,native.spatialjoin,native.groupby --connection my-bq --json
+
+# Fetch component schemas AND input type format reference in one call
+carto workflows components get native.buffer,native.spatialjoin --connection my-bq --input-formats --json
 ```
 
 **JSON output includes**: inputs, outputs, types, defaults, validation rules.
 
-## carto workflows inputs
+### --input-formats flag
 
-Get input type formats, examples, and pitfalls for the input types used by specific components.
+When `--input-formats` is passed, the response also includes the deduped format reference for every input/output type used across the requested components.
 
-```bash
-carto workflows inputs <component-names>
-  --connection <name>       # Connection name (required)
-  --json                    # JSON output (always use this)
+```json
+{
+  "inputTypes": [
+    {
+      "type": "Table",
+      "format": "...",
+      "examples": ["..."],
+      "pitfalls": ["..."]
+    }
+  ],
+  "notFound": []
+}
 ```
 
-**Important**: Pass **component names** (e.g. `native.buffer,native.spatialjoin`), NOT input type names (e.g. `Table`, `Column`). The command resolves which input types those components use and returns their format details.
+**Important**: Pass **component names** (e.g. `native.buffer,native.spatialjoin`), NOT input type names (e.g. `Table`, `Column`). The flag resolves which input types those components use and returns their format/examples/pitfalls.
 
-**Examples**:
-```bash
-# Get input formats for buffer component
-carto workflows inputs native.buffer --connection my-bq --json
-
-# Multiple components
-carto workflows inputs native.buffer,native.spatialjoin,native.groupby --connection my-bq --json
-```
-
-**JSON output includes**: `format` (expected value shape), `examples` (concrete JSON snippets), `pitfalls` (common mistakes).
+This replaces the old `carto workflows inputs` subcommand, which was planned but never shipped.
 
 ## carto workflows schedule
 

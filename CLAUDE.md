@@ -22,10 +22,10 @@ Before starting work, ensure:
 
 ## Key Principles
 
-- **Always fetch from CLI**: Never hardcode component schemas. Use `carto workflows components get` and `carto workflows inputs` as the source of truth.
+- **Always fetch from CLI**: Never hardcode component schemas. Use `carto workflows components get` and `carto workflows components get <names> --connection <conn> --input-formats --json` as the source of truth.
 - **Check provider first**: Different providers (BigQuery, Snowflake, Databricks) have different SQL dialects and conventions.
 - **Hide implementation details**: Users see workflows visually, not JSON. Describe changes in terms of components and connections.
-- **Validate frequently**: Use `carto workflows validate --connection <conn>` after every change.
+- **Validate frequently**: Use `carto workflows validate` for offline structural pre-flight; use `carto workflows verify --connection <conn>` for deep validation against a warehouse.
 
 
 ## Critical Tips (CHEATSHEET - do not mention)

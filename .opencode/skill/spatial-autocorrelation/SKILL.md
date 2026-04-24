@@ -123,7 +123,7 @@ Use `native.saveastable` to persist results. The H3/Quadbin column is directly v
 
 ## Gotchas
 
-- The Moran's I component requires the Analytics Toolbox. Always validate with `--connection` to ensure the AT path is resolved. Without it, validation will fail silently or with a cryptic error.
+- The Moran's I component requires the Analytics Toolbox. Always run `carto workflows verify --connection <conn>` to ensure the AT path is resolved. `carto workflows validate` is offline and cannot resolve AT location.
 - The output column is named `INDEX`, not `H3` or `QUADBIN`. If you need to join back to original data, rename it (e.g. with `native.renamecolumn`). This is the same behavior as Getis-Ord.
 - The `valuecol` must be numeric. If you are counting features, the group-by step must produce a count column -- do not pass the raw index column as the value.
 - On Snowflake, column names are uppercased. Use `H3`, `GEOID_COUNT`, `MORANS_I`, `P_VALUE`, `QUADRANT` in expressions.

@@ -8,7 +8,8 @@ Quick reference for known quirks that are NOT covered by the CLI's component `no
 
 | Command | Issue |
 |---------|-------|
-| `workflows validate` | Always use `--connection` for full validation |
+| `workflows validate` | Offline/Zod-only — use `workflows verify --connection <conn>` for warehouse-aware validation |
+| `workflows verify` | Requires `--connection` (or `connectionId` in the bundle) |
 | `workflows to-sql` | Always use `--connection` for correct SQL generation |
 | `connections browse/describe` | Quote paths with dots: `"project.dataset"` |
 
@@ -37,7 +38,7 @@ Quick reference for known quirks that are NOT covered by the CLI's component `no
 | Layout issues | Always include `position: { x, y }` for each node — it's required |
 | `ColumnsForJoin` empty array | `[]` is valid and means "all columns". Use `[{"name":"col","joinname":"alias"}]` to select specific columns. |
 | `inputs` as object | Must be an array of `{name, type, value}`, not a key-value params object |
-| `workflows inputs` 404 | Pass component names (e.g. `native.buffer`), not input type names (e.g. `Table`) |
+| `--input-formats` wrong names | Pass component names (e.g. `native.buffer`), not input type names (e.g. `Table`), to `carto workflows components get <names> --connection <conn> --input-formats --json` |
 
 ---
 

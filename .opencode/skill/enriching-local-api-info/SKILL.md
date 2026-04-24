@@ -81,8 +81,10 @@ For input types, request a component that uses the type you changed:
 
 ```bash
 export CARTO_WORKFLOWS_API_URL=http://localhost:3030
-carto workflows inputs <component-names> --connection <connection> --json
+carto workflows components get <component-names> --connection <connection> --input-formats --json
 ```
+
+**Note**: `CARTO_WORKFLOWS_API_URL` is only needed if you're experimenting with an unmerged local workflows-api service. The `--input-formats` data is now embedded in the CLI and works offline — no local API server is required in normal use.
 
 For component notes, fetch the component detail:
 
@@ -109,6 +111,8 @@ tail -30 /tmp/workflows-api.log
 
 1. Edit the relevant file in `~/Projects/cloud-native/packages/workflows-engine/src/`
 2. Restart: `kill $(lsof -i :3030 -t) && cd ~/Projects/cloud-native/workflows-api && yarn start:no-check &>/tmp/workflows-api.log &`
-3. Verify: `export CARTO_WORKFLOWS_API_URL=http://localhost:3030 && carto workflows inputs <component> --connection <conn> --json`
+3. Verify: `export CARTO_WORKFLOWS_API_URL=http://localhost:3030 && carto workflows components get <component> --connection <conn> --input-formats --json`
 
 No build, no compile, no dependency install. Edit, restart, verify.
+
+**Offline note**: `--input-formats` data is now bundled in the CLI itself. The `CARTO_WORKFLOWS_API_URL` override is only relevant when testing local engine changes against an unmerged workflows-api service.

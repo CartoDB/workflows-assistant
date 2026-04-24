@@ -144,7 +144,7 @@ carto connections list
 
 **Verify CLI is working**
 ```bash
-carto workflows components list --provider bigquery
+carto workflows components list --connection <name|uuid>
 ```
 
 **Make sure that the OpenCode colorscheme is correct**

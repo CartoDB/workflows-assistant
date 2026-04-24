@@ -56,10 +56,13 @@ Add source nodes, buffer, spatial join, count.
 
 **Always prefer high-level components** - only use SQL if no component exists for the operation.
 
-After each change, validate:
+After each change, validate structurally then verify against the warehouse:
 
 ```bash
-carto workflows validate workflow.json --connection my-bigquery --json
+# Offline structural check
+carto workflows validate workflow.json --json
+# Deep warehouse-aware check
+carto workflows verify workflow.json --connection my-bigquery --json
 ```
 
 ### 6. Generate and review SQL
@@ -77,7 +80,7 @@ cat workflow.sql | carto sql job my-bigquery
 
 Or upload:
 ```bash
-carto workflows create --file workflow.json --connection my-bigquery
+carto workflows create --file workflow.json --verify
 ```
 
 ### 8. Verify results and show to user

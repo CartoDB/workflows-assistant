@@ -7,7 +7,7 @@ description: How to use the CARTO CLI to interact with the platform
 
 The `carto` CLI is the command-line interface for the CARTO platform. This skill provides quick reference and links to detailed documentation for each command group.
 
-**Version**: 0.1.0
+**Version**: 0.5.0
 
 ## Quick Reference
 
@@ -19,10 +19,13 @@ The `carto` CLI is the command-line interface for the CARTO platform. This skill
 | Describe table | `carto connections describe <conn> "<fqn>"` |
 | Run query | `carto sql query <conn> "<sql>"` |
 | Execute DDL/DML | `carto sql job <conn> "<sql>"` |
-| Validate workflow | `carto workflows validate file.json --connection <conn>` |
+| Validate workflow (offline) | `carto workflows validate file.json --json` |
+| Validate workflow (deep, warehouse-aware) | `carto workflows verify file.json --connection <conn> --json` |
 | Generate SQL | `carto workflows to-sql file.json --connection <conn>` |
 | List components | `carto workflows components list --connection <conn> --json` |
 | Get component schema | `carto workflows components get <names> --connection <conn> --json` |
+| Get input type formats | `carto workflows components get <names> --connection <conn> --input-formats --json` |
+| Upload workflow | `carto workflows create --file file.json --verify` |
 | Import file | `carto imports create --file <path> --connection <conn> --destination "<fqn>"` |
 
 ## Command Groups
@@ -57,7 +60,7 @@ These flags work with all commands:
 
 | Issue | Cause | Solution |
 |-------|-------|----------|
-| `workflows validate` misses column errors | Missing `--connection` flag | Always use `--connection` |
+| `workflows validate` misses column errors | `validate` is offline/Zod-only — use `workflows verify --connection <conn>` for warehouse-aware checks |  |
 | `workflows components list` fails | Missing connection | Add `--connection <name>` |
 | `connections browse --page-size` ignored | Known limitation | Use `head -n N` or query INFORMATION_SCHEMA |
 | Table path not found | Unquoted path | Quote paths with dots: `"project.dataset.table"` |

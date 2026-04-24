@@ -1,6 +1,9 @@
 # Validation Issues
 
-Error patterns and resolutions for `carto workflows validate` failures.
+Error patterns and resolutions for `carto workflows validate` (offline) and `carto workflows verify` (deep) failures.
+
+- **`carto workflows validate`** — Zod-only, offline, no auth. Catches JSON structure and schema errors.
+- **`carto workflows verify`** — warehouse-aware. Catches column types, table existence, AT resolution, source errors, and custom SQL issues. Requires `--connection` (or `connectionId` in the bundle).
 
 ---
 
@@ -18,9 +21,9 @@ Error patterns and resolutions for `carto workflows validate` failures.
 
 ---
 
-## For Snowflake: Always Use --connection
+## For Snowflake: Always Use verify
 
-Structure-only validation (without `--connection`) will fail for any workflow using Analytics Toolbox components (H3, Quadbin, Getis-Ord, enrichment) because `analyticsToolboxDataset` is only set via the connection. Always validate with `--connection` for Snowflake workflows.
+`carto workflows validate` is offline and cannot resolve AT components. For Snowflake workflows using Analytics Toolbox components (H3, Quadbin, Getis-Ord, enrichment), always run `carto workflows verify --connection <conn>` — `analyticsToolboxDataset` is only resolved via the connection.
 
 Column name warnings (e.g. `geom` not found, available: `GEOM`) indicate Snowflake uppercase casing — update your column references to UPPERCASE.
 
