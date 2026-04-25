@@ -37,6 +37,24 @@ Always review warnings carefully - they often indicate issues that will cause ru
 
 ---
 
+## SCHEMA_TRACE warnings
+
+`SCHEMA_TRACE` warnings come from the engine's schema-introspection wrapper
+(it wraps user SQL into a `SELECT ... FROM (...) LIMIT 0` query for column
+discovery). The wrapper itself can have keyword conflicts that the user
+can't fix — for example, a hyphenated BigQuery project name like
+`cartodb-on-gcp-X.Y.Z` resolves to a fragment containing the unquoted word
+`on`, which BigQuery treats as a join keyword.
+
+These are reported as **warnings**, not errors. The workflow is still
+valid and `create --verify` will accept it. If a SCHEMA_TRACE warning
+maps to a column you actually need to reference downstream, work around
+it by switching to `native.select` (which embeds only the column-list
+into the engine's SQL, not the full query) or by quoting identifiers
+explicitly inside `native.customsql`.
+
+---
+
 ## General Recovery Steps
 
 1. **Re-validate** with full flags after any fix

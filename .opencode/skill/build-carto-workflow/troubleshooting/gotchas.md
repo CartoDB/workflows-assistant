@@ -42,6 +42,29 @@ Quick reference for known quirks that are NOT covered by the CLI's component `no
 
 ---
 
+## Component-Specific Gotchas
+
+### `native.groupby` is single-column
+
+`native.groupby` accepts a single `Column` for grouping. For multi-key
+aggregation (e.g. group by `day_of_week` AND `month`), you need either:
+
+- Two `native.groupby` nodes chained (group by A, then group by B), OR
+- A `native.customsql` node with explicit `GROUP BY a, b` clause.
+
+The skill's general guidance to "prefer high-level components over
+`native.customsql`" doesn't apply when the high-level component can't
+express what you need.
+
+### `native.customsql` handle names are `sourcea`, `sourceb`, `sourcec`
+
+Inside the SQL body, refer to upstream tables as `$a`, `$b`, `$c`. But the
+input *names* on the node are `sourcea`, `sourceb`, `sourcec` — not `a`,
+`b`, `c`. Use `carto workflows components get native.customsql --connection <conn> --json`
+to see the exact input definition.
+
+---
+
 ## Provider-Specific Gotchas
 
 ### For Snowflake

@@ -6,76 +6,79 @@ A complete workflow that reads a table, filters rows, and counts results.
 
 ```json
 {
-  "schemaVersion": "1.0.0",
+  "connectionId": "<uuid from carto connections list>",
   "title": "Filter and Count POIs",
   "description": "Filter points of interest by category and count them",
-  "connectionProvider": "bigquery",
-  "nodes": [
-    {
-      "id": "source-pois",
-      "type": "generic",
-      "data": {
-        "name": "native.gettablebyname",
-        "label": "Get POIs",
-        "inputs": [
-          { "name": "source", "type": "String", "value": "project.dataset.points_of_interest" }
-        ],
-        "outputs": [
-          { "name": "out", "type": "Table" }
-        ]
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "nodes": [
+      {
+        "id": "source-pois",
+        "type": "generic",
+        "data": {
+          "name": "native.gettablebyname",
+          "label": "Get POIs",
+          "inputs": [
+            { "name": "source", "type": "String", "value": "project.dataset.points_of_interest" }
+          ],
+          "outputs": [
+            { "name": "out", "type": "Table" }
+          ]
+        },
+        "position": { "x": 100, "y": 100 }
       },
-      "position": { "x": 100, "y": 100 }
-    },
-    {
-      "id": "filter-restaurants",
-      "type": "generic",
-      "data": {
-        "name": "native.where",
-        "label": "Filter Restaurants",
-        "inputs": [
-          { "name": "source", "type": "Table" },
-          { "name": "expression", "type": "StringSql", "value": "category = 'restaurant'" }
-        ],
-        "outputs": [
-          { "name": "match", "type": "Table" },
-          { "name": "unmatch", "type": "Table" }
-        ]
+      {
+        "id": "filter-restaurants",
+        "type": "generic",
+        "data": {
+          "name": "native.where",
+          "label": "Filter Restaurants",
+          "inputs": [
+            { "name": "source", "type": "Table" },
+            { "name": "expression", "type": "StringSql", "value": "category = 'restaurant'" }
+          ],
+          "outputs": [
+            { "name": "match", "type": "Table" },
+            { "name": "unmatch", "type": "Table" }
+          ]
+        },
+        "position": { "x": 300, "y": 100 }
       },
-      "position": { "x": 300, "y": 100 }
-    },
-    {
-      "id": "count-results",
-      "type": "generic",
-      "data": {
-        "name": "native.count",
-        "label": "Count Restaurants",
-        "inputs": [
-          { "name": "source", "type": "Table" }
-        ],
-        "outputs": [
-          { "name": "result", "type": "Table" }
-        ]
+      {
+        "id": "count-results",
+        "type": "generic",
+        "data": {
+          "name": "native.count",
+          "label": "Count Restaurants",
+          "inputs": [
+            { "name": "source", "type": "Table" }
+          ],
+          "outputs": [
+            { "name": "result", "type": "Table" }
+          ]
+        },
+        "position": { "x": 500, "y": 100 }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-source-to-filter",
+        "source": "source-pois",
+        "target": "filter-restaurants",
+        "sourceHandle": "out",
+        "targetHandle": "source"
       },
-      "position": { "x": 500, "y": 100 }
-    }
-  ],
-  "edges": [
-    {
-      "id": "edge-source-to-filter",
-      "source": "source-pois",
-      "target": "filter-restaurants",
-      "sourceHandle": "out",
-      "targetHandle": "source"
-    },
-    {
-      "id": "edge-filter-to-count",
-      "source": "filter-restaurants",
-      "target": "count-results",
-      "sourceHandle": "match",
-      "targetHandle": "source"
-    }
-  ],
-  "variables": []
+      {
+        "id": "edge-filter-to-count",
+        "source": "filter-restaurants",
+        "target": "count-results",
+        "sourceHandle": "match",
+        "targetHandle": "source"
+      }
+    ],
+    "variables": []
+  }
 }
 ```
 

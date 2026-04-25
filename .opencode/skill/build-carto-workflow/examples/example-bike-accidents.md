@@ -37,22 +37,27 @@ carto workflows components get native.buffer --connection my-bigquery --json
 
 ### 4. Create workflow JSON
 
-Create a workflow.json file with the basic structure:
+Create a workflow.json file with the correct nested structure:
 
 ```json
 {
-  "schemaVersion": "1.0.0",
+  "connectionId": "<uuid from carto connections list>",
   "title": "Accidents Near Parkings",
-  "connectionProvider": "bigquery",
-  "nodes": [],
-  "edges": [],
-  "variables": []
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "nodes": [],
+    "edges": [],
+    "variables": []
+  }
 }
 ```
 
+Get the `connectionId` UUID with `carto connections list --json`.
+
 ### 5. Add nodes iteratively, validating after each
 
-Add source nodes, buffer, spatial join, count.
+Add source nodes, buffer, spatial join, count inside `config.nodes` and `config.edges`.
 
 **Always prefer high-level components** - only use SQL if no component exists for the operation.
 
