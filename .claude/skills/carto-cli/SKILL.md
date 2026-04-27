@@ -22,7 +22,6 @@ The `carto` CLI is the command-line interface for the CARTO platform. This skill
 | Validate workflow (offline) | `carto workflows validate file.json --json` |
 | Validate workflow (deep, warehouse-aware) | `carto workflows verify file.json --connection <conn> --json` |
 | Generate SQL | `carto workflows to-sql file.json --connection <conn>` |
-| Show workflow DAG | `carto workflows show file.json` |
 | List components | `carto workflows components list --connection <conn> --json` |
 | Get component schema | `carto workflows components get <names> --connection <conn> --json` |
 | Get input type formats | `carto workflows components get <names> --connection <conn> --input-formats --json` |

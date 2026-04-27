@@ -145,14 +145,6 @@ carto workflows delete <id>
 
 **Note**: Requires typing "delete" to confirm, or use `--yes` to skip confirmation.
 
-## carto workflows show
-
-Display workflow diagram structure (for debugging).
-
-```bash
-carto workflows show <file>
-```
-
 ## carto workflows create
 
 Upload a workflow to CARTO. The connection is read from `connectionId` inside the bundle — there is no `--connection` flag.
@@ -282,3 +274,175 @@ carto workflows copy <id>
   --title <title>            # Override title (optional)
   --skip-source-validation   # Skip table accessibility check
 ```
+
+## carto workflows run
+
+Execute a workflow against its connection. Synchronous by default — polls until the job reaches a terminal state and surfaces per-node output tables on success.
+
+```bash
+carto workflows run <id>
+  --no-cache              # Compile in FullNoCache mode (skip the engine cache)
+  --async                 # Return jobId immediately instead of polling
+  --poll-interval <ms>    # Polling interval (default: engine default)
+  --timeout <ms>          # Abort polling after this many ms
+  --json                  # JSON output
+```
+
+**Subcommands**:
+
+```bash
+# Check status of a previously submitted job
+carto workflows run status <job-id>
+  --connection <name>     # Connection (required if not derivable from job)
+  --json
+
+# Fetch output rows for a specific node
+carto workflows run output <workflow-id> <node-id>
+  --limit <n>             # Max rows to return
+  --json
+```
+
+**Notes**:
+- The workflow must have a `connectionId` set (no `--connection` flag on `run` itself — it uses the bundle's connection).
+- `--async` is useful for long-running workflows; capture `jobId` from the response and poll with `workflows run status`.
+- This command is hidden from `--help` (agent-facing) but stable.
+
+## carto workflows share / unshare
+
+Convenience verbs over the privacy endpoint. Resolves user emails → Auth0 user IDs and merges sharing changes (the underlying API requires full replacement of `userIds`/`groupIds`, but the CLI fetches current state and merges for you).
+
+```bash
+carto workflows share <id>
+  --with <email>[,<email>...]   # Share with specific users (repeatable, or comma-separated)
+  --org                         # Share with the entire organization
+  --can-edit                    # Grant edit access (sets collaborative = true)
+  --list                        # Show who has access; do not modify
+  --json
+```
+
+```bash
+carto workflows unshare <id>
+  --with <email>[,<email>...]   # Revoke for specific users
+  --org                         # Revoke org-wide sharing
+  --json
+```
+
+**Examples**:
+```bash
+# Share with two users, viewer access
+carto workflows share <id> --with alice@x.com,bob@x.com
+
+# Share with the org and allow edits
+carto workflows share <id> --org --can-edit
+
+# Inspect current sharing state
+carto workflows share <id> --list --json
+
+# Revoke a user
+carto workflows unshare <id> --with alice@x.com
+```
+
+**Note**: An email that doesn't resolve to a user in the org fails the command — typos error loud rather than silently skipping.
+
+## carto workflows extensions install
+
+Install a CARTO Workflows extension zip into a connection. Extracts the zip and runs the contained SQL via SQL API jobs.
+
+```bash
+carto workflows extensions install
+  --file <path>             # Extension zip file (required)
+  --connection <name>       # Target connection name (required)
+  --json
+```
+
+**Example**:
+```bash
+carto workflows extensions install --file my-extension.zip --connection my-bigquery
+```
+
+## carto workflows schema [section]
+
+Emit the JSON Schema for a part of the workflow bundle. Use this to introspect the exact bundle shape rather than guessing from examples — agents that read `customsql` and `handles` before composing a bundle produce runnable workflows on first try.
+
+```bash
+carto workflows schema [section] [--json]
+```
+
+**Available sections**:
+
+| Section | What it documents |
+|---------|-------------------|
+| `bundle` | Top-level bundle shape used by `create` / `update` / `get` |
+| `config` | The `config` block (datasets, nodes, edges, variables) |
+| `node` | Generic workflow node |
+| `node.source` | Source node specifics |
+| `node.customsql` | Custom SQL node specifics |
+| `customsql` | Custom SQL template / variable interpolation rules |
+| `edge` | Edge between nodes |
+| `privacy` | `privacy` + `sharingScope` + `userIds` / `groupIds` |
+| `schedule` | Schedule expression shape |
+| `variable` | Variable definition |
+| `handles` | Input / output handle reference |
+| `enums` | Enumerated values used across the bundle |
+| `components` | Connected components catalog result |
+| `components.summary` | Component summary entry |
+| `components.detail` | Component detail entry |
+| `components.input` | Component input summary |
+| `components.output` | Component output summary |
+
+**Examples**:
+```bash
+# List available sections
+carto workflows schema
+
+# Get the bundle shape
+carto workflows schema bundle --json
+
+# Custom SQL templating reference (high-value for agents)
+carto workflows schema customsql --json
+
+# Handle reference
+carto workflows schema handles --json
+```
+
+## carto workflows mcp
+
+Manage workflows-as-MCP-tools. A workflow can be published as a named MCP tool so AI agents can invoke it as a capability. The tool definition lives at `config.mcpTool` inside the workflow.
+
+```bash
+# Enable as MCP tool
+carto workflows mcp publish <id>
+  --name <name>              # Tool name (default: derived from workflow title)
+  --description <desc>       # Tool description (default: workflow description)
+  --from-file <path>         # Provide full mcpTool spec (overrides --name/--description)
+  --json
+
+# Disable as MCP tool
+carto workflows mcp unpublish <id>
+  --json
+
+# Show the current mcpTool config
+carto workflows mcp describe <id>
+  --json
+
+# List all workflows currently published as MCP tools
+carto workflows mcp list
+  --json
+```
+
+**Examples**:
+```bash
+# Quick publish using workflow title/description
+carto workflows mcp publish <id>
+
+# Publish with explicit name + description
+carto workflows mcp publish <id> --name buffer_areas --description "Buffer geometries by N meters"
+
+# Publish with a hand-crafted spec (inputs/outputs/procedure)
+carto workflows mcp publish <id> --from-file mcp-tool.json
+
+# List everything published in the current account
+carto workflows mcp list --json
+```
+
+**Note**: The backend expands a minimal `{ enabled: true }` into the full skeleton on save. Use `--from-file` only when you need fine control over `inputs`, `output`, or `procedure`.
