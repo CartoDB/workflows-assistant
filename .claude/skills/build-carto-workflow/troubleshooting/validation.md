@@ -1,6 +1,9 @@
 # Validation Issues
 
-Error patterns and resolutions for `carto workflows validate` failures.
+Error patterns and resolutions for `carto workflows validate` (offline) and `carto workflows verify` (deep) failures.
+
+- **`carto workflows validate`** — Zod-only, offline, no auth. Catches JSON structure and schema errors.
+- **`carto workflows verify`** — warehouse-aware. Catches column types, table existence, AT resolution, source errors, and custom SQL issues. Requires `--connection` (or `connectionId` in the bundle).
 
 ---
 
@@ -18,9 +21,9 @@ Error patterns and resolutions for `carto workflows validate` failures.
 
 ---
 
-## For Snowflake: Always Use --connection
+## For Snowflake: Always Use verify
 
-Structure-only validation (without `--connection`) will fail for any workflow using Analytics Toolbox components (H3, Quadbin, Getis-Ord, enrichment) because `analyticsToolboxDataset` is only set via the connection. Always validate with `--connection` for Snowflake workflows.
+`carto workflows validate` is offline and cannot resolve AT components. For Snowflake workflows using Analytics Toolbox components (H3, Quadbin, Getis-Ord, enrichment), always run `carto workflows verify --connection <conn>` — `analyticsToolboxDataset` is only resolved via the connection.
 
 Column name warnings (e.g. `geom` not found, available: `GEOM`) indicate Snowflake uppercase casing — update your column references to UPPERCASE.
 
@@ -31,6 +34,24 @@ Column name warnings (e.g. `geom` not found, available: `GEOM`) indicate Snowfla
 Column type mismatches (e.g., string instead of geography) are reported as **warnings**, not errors. The workflow is still "valid" but may fail at runtime.
 
 Always review warnings carefully - they often indicate issues that will cause runtime failures.
+
+---
+
+## SCHEMA_TRACE warnings
+
+`SCHEMA_TRACE` warnings come from the engine's schema-introspection wrapper
+(it wraps user SQL into a `SELECT ... FROM (...) LIMIT 0` query for column
+discovery). The wrapper itself can have keyword conflicts that the user
+can't fix — for example, a hyphenated BigQuery project name like
+`cartodb-on-gcp-X.Y.Z` resolves to a fragment containing the unquoted word
+`on`, which BigQuery treats as a join keyword.
+
+These are reported as **warnings**, not errors. The workflow is still
+valid and `create --verify` will accept it. If a SCHEMA_TRACE warning
+maps to a column you actually need to reference downstream, work around
+it by switching to `native.select` (which embeds only the column-list
+into the engine's SQL, not the full query) or by quoting identifiers
+explicitly inside `native.customsql`.
 
 ---
 

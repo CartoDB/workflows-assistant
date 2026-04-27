@@ -55,9 +55,11 @@ cat workflow.sql | carto sql job <connection>
 Upload the workflow and run it from CARTO:
 
 ```bash
-carto workflows create --file workflow.json --connection <connection>
+carto workflows create --file workflow.json --verify
 # Then run from https://app.carto.com/workflows/<workflow-id>
 ```
+
+The connection is read from `connectionId` inside the bundle — no `--connection` flag is accepted by `create`.
 
 ---
 

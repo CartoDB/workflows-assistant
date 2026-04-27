@@ -53,9 +53,9 @@ Component schemas, input type formats, and gotchas are served by the CLI — **n
 
 3. **Fetch input type formats** for the components you selected:
    ```bash
-   carto workflows inputs <component1>,<component2>,<component3> --connection <connection> --json
+   carto workflows components get <component1>,<component2>,<component3> --connection <connection> --input-formats --json
    ```
-   Pass **component names** (e.g. `native.buffer,native.spatialjoin`), NOT input type names. The command returns `format`, `examples`, and `pitfalls` for each input type used by those components. This is your reference for how to set parameter values.
+   Pass **component names** (e.g. `native.buffer,native.spatialjoin`), NOT input type names. The `--input-formats` flag returns `format`, `examples`, and `pitfalls` for each input/output type used by those components. This is your reference for how to set parameter values.
 
 4. **Design principles**:
    - Preserve identifier and spatial columns throughout
@@ -79,9 +79,11 @@ Component schemas, input type formats, and gotchas are served by the CLI — **n
 
 2. **Build in phases**, validating after each:
    ```bash
-   carto workflows validate workflow.json --connection <connection-name> --json
+   # Offline structural check (fast, no auth needed)
+   carto workflows validate workflow.json --json
+   # Deep warehouse-aware check (column types, table existence, AT resolution)
+   carto workflows verify workflow.json --connection <connection-name> --json
    ```
-   The `--connection` flag auto-configures all needed settings (tempLocation, AT, etc.).
 
 3. **Fix errors silently** - don't expose implementation details to user
 
@@ -98,8 +100,9 @@ Component schemas, input type formats, and gotchas are served by the CLI — **n
 1. Ask if user wants to upload
 2. Upload and provide URL:
    ```bash
-   carto workflows create --file workflow.json --connection <connection-name>
+   carto workflows create --file workflow.json --verify
    ```
+   The connection comes from `connectionId` inside the bundle — no `--connection` flag needed here.
 3. Do NOT auto-execute unless explicitly requested
 
 ---
@@ -110,25 +113,32 @@ Component schemas, input type formats, and gotchas are served by the CLI — **n
 
 ```json
 {
-  "schemaVersion": "1.0.0",
+  "connectionId": "<uuid from carto connections list>",
   "title": "Workflow Title",
   "description": "What this workflow does",
-  "connectionProvider": "bigquery | snowflake | redshift | postgres | databricksWarehouse | oracle",
-  "nodes": [],
-  "edges": [],
-  "variables": []
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery | snowflake | redshift | postgres | databricksWarehouse | oracle",
+    "nodes": [],
+    "edges": [],
+    "variables": []
+  }
 }
 ```
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `schemaVersion` | Yes | Always `"1.0.0"` |
+| `connectionId` | Yes (for create/verify) | UUID of the CARTO connection — get it via `carto connections list --json` |
 | `title` | Yes | Display name |
-| `connectionProvider` | Yes | Must match the connection's provider: `bigquery`, `snowflake`, `redshift`, `postgres`, `databricksWarehouse`, `oracle` |
-| `nodes` | Yes | Array of workflow components |
-| `edges` | Yes | Array of connections between nodes |
+| `config.schemaVersion` | Yes | Always `"1.0.0"` |
+| `config.connectionProvider` | Yes | Must match the connection's provider: `bigquery`, `snowflake`, `redshift`, `postgres`, `databricksWarehouse`, `oracle` |
+| `config.nodes` | Yes | Array of workflow components |
+| `config.edges` | Yes | Array of connections between nodes |
+| `config.variables` | No | Optional array of workflow variables |
 
 **Important**: The `connectionProvider` value must match the actual provider of the connection you use for validation and execution. Using the wrong value causes SQL generation to use the wrong dialect. Check provider with `carto connections list --search <name> --json` (note: `carto connections get` requires a UUID, not a name).
+
+On `update`, the `config` wrapper is optional (you can patch top-level fields like `title` independently); on `create` it is required and must contain `nodes` and `edges` (empty arrays are OK).
 
 ### Node Structure
 
@@ -195,7 +205,7 @@ Reference with `{{variable_name}}` syntax.
 |---------|---------|
 | `carto workflows components list --connection <conn> --json` | List all available components |
 | `carto workflows components get <names> --connection <conn> --json` | Get component schemas with inputs, outputs, and `notes` (gotchas) |
-| `carto workflows inputs <component-names> --connection <conn> --json` | Get input type `format`, `examples`, and `pitfalls` for the types used by those components. Pass **component names** (e.g. `native.buffer`), not input type names. |
+| `carto workflows components get <names> --connection <conn> --input-formats --json` | Get input type `format`, `examples`, and `pitfalls` for the types used by those components. Pass **component names** (e.g. `native.buffer`), not input type names. |
 
 ### What to look for in the response
 
@@ -224,7 +234,7 @@ When things go wrong, see the [troubleshooting/](troubleshooting/) folder:
 | "table not found" | Verify FQN format matches provider (see [providers/](providers/)) |
 | "connection failed" | Run `carto auth status`, then `carto auth login` |
 | Empty results (0 rows) | Filters too restrictive; check join keys; verify case sensitivity |
-| Validation passes but execution fails | Use `--connection` for full schema validation |
+| Validate passes but execution fails | Run `carto workflows verify --connection <conn>` for full warehouse-aware validation |
 
 ---
 
@@ -269,9 +279,9 @@ Comma-separated `column,method` pairs: `"population,sum,area,avg,name,count"`. Y
 
 Some components (e.g. `gettablebyname`) return `"type": "View"` in their output schema, while downstream components expect `"type": "Table"` inputs. These are interchangeable for edge connections — you can connect a `View` output to a `Table` input.
 
-### Structure-Only Validation and AT Components
+### Validation and AT Components
 
-Validating without `--connection` will fail for any component that depends on the Analytics Toolbox (H3, Quadbin, Getis-Ord, enrichment, etc.) because the `analyticsToolboxDataset` environment variable is only set when a connection is provided. Always use `--connection` for workflows with spatial analytics components.
+`carto workflows validate` is offline (Zod-only) and cannot resolve Analytics Toolbox location. For workflows that use AT components (H3, Quadbin, Getis-Ord, enrichment, etc.), always run `carto workflows verify --connection <conn>` for the warehouse-aware checks that include AT resolution.
 
 ---
 
