@@ -1,0 +1,175 @@
+{
+  "name": "carto-workflows-assistant",
+  "owner": {
+    "name": "CARTO",
+    "url": "https://github.com/CartoDB"
+  },
+  "metadata": {
+    "version": "0.1.0",
+    "description": "Skills for building, validating, and analyzing CARTO geospatial workflows."
+  },
+  "plugins": [
+    {
+      "name": "build-carto-workflow",
+      "source": "./",
+      "description": "Write, validate, and upload CARTO Workflows. Includes provider guides (BigQuery, Snowflake, Databricks) and troubleshooting.",
+      "category": "carto-workflows",
+      "tags": ["carto", "workflows", "validation", "geospatial"],
+      "strict": false,
+      "skills": ["./.claude/skills/build-carto-workflow"]
+    },
+    {
+      "name": "carto-cli",
+      "source": "./",
+      "description": "Use the CARTO CLI to interact with the platform: auth, connections, imports, SQL, workflows, install.",
+      "category": "carto-workflows",
+      "tags": ["carto", "cli", "reference"],
+      "strict": false,
+      "skills": ["./.claude/skills/carto-cli"]
+    },
+    {
+      "name": "find-tables",
+      "source": "./",
+      "description": "Discover available tables in a CARTO connection via the CLI.",
+      "category": "carto-workflows",
+      "tags": ["carto", "discovery", "tables"],
+      "strict": false,
+      "skills": ["./.claude/skills/find-tables"]
+    },
+    {
+      "name": "render-workflow-diagram",
+      "source": "./",
+      "description": "Render a CARTO Workflow JSON as a Unicode box-art DAG diagram in the terminal.",
+      "category": "carto-workflows",
+      "tags": ["carto", "visualization", "dag", "terminal"],
+      "strict": false,
+      "skills": ["./.claude/skills/render-workflow-diagram"]
+    },
+    {
+      "name": "enriching-local-api-info",
+      "source": "./",
+      "description": "Enrich component notes and input-type documentation served by the local workflows-api.",
+      "category": "carto-workflows",
+      "tags": ["carto", "documentation", "api"],
+      "strict": false,
+      "skills": ["./.claude/skills/enriching-local-api-info"]
+    },
+    {
+      "name": "session-wrapup",
+      "source": "./",
+      "description": "Gather session learnings to feed back into agent and skill refinements.",
+      "category": "carto-workflows",
+      "tags": ["meta", "feedback", "iteration"],
+      "strict": false,
+      "skills": ["./.claude/skills/session-wrapup"]
+    },
+    {
+      "name": "hotspot-analysis",
+      "source": "./",
+      "description": "Build Getis-Ord Gi* hotspot and coldspot detection workflows for points or grids, including spacetime variants.",
+      "category": "spatial-analysis",
+      "tags": ["hotspot", "clustering", "getis-ord", "geospatial"],
+      "strict": false,
+      "skills": ["./.claude/skills/hotspot-analysis"]
+    },
+    {
+      "name": "spatial-enrichment",
+      "source": "./",
+      "description": "Add demographics, sociodemographic features, and 'what's around' enrichment to points, grids, or trade areas.",
+      "category": "spatial-analysis",
+      "tags": ["enrichment", "demographics", "trade-area"],
+      "strict": false,
+      "skills": ["./.claude/skills/spatial-enrichment"]
+    },
+    {
+      "name": "geocoding",
+      "source": "./",
+      "description": "Convert street addresses or place names to geographic coordinates in CARTO.",
+      "category": "spatial-analysis",
+      "tags": ["geocoding", "addresses", "geometry"],
+      "strict": false,
+      "skills": ["./.claude/skills/geocoding"]
+    },
+    {
+      "name": "ml-pipelines",
+      "source": "./",
+      "description": "Build ML pipelines (classification, regression, forecasting) on BigQuery ML and Snowflake ML inside CARTO Workflows.",
+      "category": "spatial-analysis",
+      "tags": ["ml", "bqml", "snowflake-ml", "forecasting"],
+      "strict": false,
+      "skills": ["./.claude/skills/ml-pipelines"]
+    },
+    {
+      "name": "composite-scoring",
+      "source": "./",
+      "description": "Build composite-score workflows: weighted scores, indexes, PCA, supervised/unsupervised ranking.",
+      "category": "spatial-analysis",
+      "tags": ["scoring", "ranking", "pca", "indexing"],
+      "strict": false,
+      "skills": ["./.claude/skills/composite-scoring"]
+    },
+    {
+      "name": "trade-area-analysis",
+      "source": "./",
+      "description": "Trade area / catchment analysis: isochrones, site scoring, location ranking for retail, OOH, and services.",
+      "category": "spatial-analysis",
+      "tags": ["trade-area", "isochrone", "site-selection", "retail"],
+      "strict": false,
+      "skills": ["./.claude/skills/trade-area-analysis"]
+    },
+    {
+      "name": "site-selection",
+      "source": "./",
+      "description": "Site selection and cannibalization analysis: candidate scoring, twin/look-alike areas, network impact.",
+      "category": "spatial-analysis",
+      "tags": ["site-selection", "cannibalization", "expansion"],
+      "strict": false,
+      "skills": ["./.claude/skills/site-selection"]
+    },
+    {
+      "name": "territory-planning",
+      "source": "./",
+      "description": "Territory balancing and location allocation: divide areas into balanced regions or place facilities optimally.",
+      "category": "spatial-analysis",
+      "tags": ["territory", "balancing", "location-allocation"],
+      "strict": false,
+      "skills": ["./.claude/skills/territory-planning"]
+    },
+    {
+      "name": "routing-od-analysis",
+      "source": "./",
+      "description": "Routing and origin-destination analysis: routes, isolines, OD matrices, mobility patterns.",
+      "category": "spatial-analysis",
+      "tags": ["routing", "od-matrix", "isoline", "mobility"],
+      "strict": false,
+      "skills": ["./.claude/skills/routing-od-analysis"]
+    },
+    {
+      "name": "spatial-autocorrelation",
+      "source": "./",
+      "description": "Moran's I / LISA workflows to detect spatial clustering, dispersion, and HH/HL/LH/LL outliers.",
+      "category": "spatial-analysis",
+      "tags": ["morans-i", "lisa", "autocorrelation"],
+      "strict": false,
+      "skills": ["./.claude/skills/spatial-autocorrelation"]
+    },
+    {
+      "name": "geographically-weighted-regression",
+      "source": "./",
+      "description": "Geographically Weighted Regression (GWR): per-cell coefficients revealing how predictor importance varies across space.",
+      "category": "spatial-analysis",
+      "tags": ["gwr", "regression", "spatial-non-stationarity"],
+      "strict": false,
+      "skills": ["./.claude/skills/geographically-weighted-regression"]
+    },
+    {
+      "name": "map-visualization",
+      "source": "./",
+      "description": "Tips for visualizing analysis results on a CARTO map.",
+      "category": "spatial-analysis",
+      "tags": ["visualization", "map", "kepler"],
+      "strict": false,
+      "skills": ["./.claude/skills/map-visualization"]
+    }
+  ]
+}
