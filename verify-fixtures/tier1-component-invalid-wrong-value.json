@@ -1,0 +1,49 @@
+{
+  "title": "Tier-1: spatialcompositeunsupervised STANDARD_SCALER + GEOMETRIC (forbidden combo)",
+  "description": "The component checkInputValues hook rejects this scaling/aggregation pair. Surfaces as COMPONENT_INVALID at the cheap pass. Source is a synthetic customsql so no external table is needed.",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "variables": [],
+    "nodes": [
+      {
+        "id": "src",
+        "type": "generic",
+        "position": { "x": 0, "y": 0 },
+        "data": {
+          "name": "native.customsql",
+          "version": "2.0.0",
+          "inputs": [
+            { "name": "sourcea", "type": "Table", "value": null },
+            { "name": "sourceb", "type": "Table", "value": null },
+            { "name": "sourcec", "type": "Table", "value": null },
+            { "name": "sql", "type": "StringSql", "value": "SELECT '8928308280fffff' AS h3, 1.0 AS value" }
+          ],
+          "outputs": [{ "name": "result", "type": "Table" }]
+        }
+      },
+      {
+        "id": "scu",
+        "type": "generic",
+        "position": { "x": 400, "y": 0 },
+        "data": {
+          "name": "native.spatialcompositeunsupervised",
+          "version": "1.0.0",
+          "inputs": [
+            { "name": "source", "type": "Table", "value": null },
+            { "name": "indexcol", "type": "Column", "value": "h3", "parent": "source" },
+            { "name": "scoringmethod", "type": "Selection", "value": "CUSTOM_WEIGHTS" },
+            { "name": "weights", "type": "ColumnNumber", "value": "[[\"value\",1,false]]", "parent": "source" },
+            { "name": "scaling", "type": "Selection", "value": "STANDARD_SCALER" },
+            { "name": "aggregation", "type": "Selection", "value": "GEOMETRIC" },
+            { "name": "outputformatting", "type": "Selection", "value": "NONE" }
+          ]
+        }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "src", "target": "scu", "sourceHandle": "result", "targetHandle": "source" }
+    ]
+  }
+}

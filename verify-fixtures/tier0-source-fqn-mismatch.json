@@ -1,0 +1,23 @@
+{
+  "title": "Tier-0: source node FQN mismatch (data.id vs data.inputs[0].value)",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "nodes": [
+      {
+        "id": "src",
+        "type": "source",
+        "position": { "x": 0, "y": 0 },
+        "data": {
+          "id": "carto-demo-data.demo_tables.nyc_collisions",
+          "type": "table",
+          "inputs": [
+            { "name": "source", "type": "String", "value": "carto-demo-data.demo_tables.nyc_traffic_counts" }
+          ]
+        }
+      }
+    ],
+    "edges": []
+  }
+}

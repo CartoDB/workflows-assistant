@@ -1,0 +1,9 @@
+{
+  "title": "Tier-0: missing connectionId",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "nodes": [],
+    "edges": []
+  }
+}

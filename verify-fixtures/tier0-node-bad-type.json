@@ -1,0 +1,17 @@
+{
+  "title": "Tier-0: unsupported node type",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "nodes": [
+      {
+        "id": "n1",
+        "type": "annotation",
+        "position": { "x": 0, "y": 0 },
+        "data": { "text": "this is a sticky note" }
+      }
+    ],
+    "edges": []
+  }
+}

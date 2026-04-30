@@ -1,0 +1,40 @@
+{
+  "title": "Tier-1: native.buffer with required parameter 'distance' unset",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "nodes": [
+      {
+        "id": "src",
+        "type": "generic",
+        "position": { "x": 0, "y": 0 },
+        "data": {
+          "name": "native.gettablebyname",
+          "version": "1",
+          "inputs": [
+            { "name": "source", "type": "String", "value": "carto-demo-data.demo_tables.nyc_collisions" }
+          ]
+        }
+      },
+      {
+        "id": "buf",
+        "type": "generic",
+        "position": { "x": 200, "y": 0 },
+        "data": {
+          "name": "native.buffer",
+          "version": "1",
+          "inputs": [
+            { "name": "source", "type": "Table", "value": null },
+            { "name": "geomcol", "type": "Column", "value": "geom", "parent": "source" },
+            { "name": "distance", "type": "Number", "value": null },
+            { "name": "units", "type": "Selection", "value": "Meters" }
+          ]
+        }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "src", "target": "buf", "sourceHandle": "out", "targetHandle": "source" }
+    ]
+  }
+}

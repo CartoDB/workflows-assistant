@@ -1,0 +1,47 @@
+{
+  "title": "Tier-2 (--verify=sql): chained customsql, upstream FQN only known at runtime",
+  "description": "downstream's $a binds to upstream's runtime-only temp table. Tier-2 cannot synthesise an FQN to substitute, so it emits VERIFY_SKIPPED. Tier-1 schema-trace covers this case.",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "variables": [],
+    "nodes": [
+      {
+        "id": "upstream",
+        "type": "generic",
+        "data": {
+          "name": "native.customsql",
+          "version": "2.0.0",
+          "inputs": [
+            { "name": "sourcea", "type": "Table", "value": null },
+            { "name": "sourceb", "type": "Table", "value": null },
+            { "name": "sourcec", "type": "Table", "value": null },
+            { "name": "sql", "type": "StringSql", "value": "SELECT '8928308280fffff' AS h3, 1.0 AS value" }
+          ],
+          "outputs": [{ "name": "result", "type": "Table" }]
+        },
+        "position": { "x": 0, "y": 0 }
+      },
+      {
+        "id": "downstream",
+        "type": "generic",
+        "data": {
+          "name": "native.customsql",
+          "version": "2.0.0",
+          "inputs": [
+            { "name": "sourcea", "type": "Table", "value": null },
+            { "name": "sourceb", "type": "Table", "value": null },
+            { "name": "sourcec", "type": "Table", "value": null },
+            { "name": "sql", "type": "StringSql", "value": "SELECT * FROM `$a`" }
+          ],
+          "outputs": [{ "name": "result", "type": "Table" }]
+        },
+        "position": { "x": 400, "y": 0 }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "upstream", "target": "downstream", "sourceHandle": "result", "targetHandle": "sourcea" }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "title": "Tier-2 (--verify=sql): customsql body dry-run fails (column doesn't exist)",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "variables": [],
+    "nodes": [
+      {
+        "id": "src",
+        "type": "generic",
+        "data": {
+          "name": "native.gettablebyname",
+          "version": "1",
+          "inputs": [
+            { "name": "source", "type": "String", "value": "carto-demo-data.demo_tables.nyc_collisions" }
+          ],
+          "outputs": [{ "name": "out", "type": "View" }]
+        },
+        "position": { "x": 0, "y": 0 }
+      },
+      {
+        "id": "bad-column",
+        "type": "generic",
+        "data": {
+          "name": "native.customsql",
+          "version": "2.0.0",
+          "inputs": [
+            { "name": "sourcea", "type": "Table", "value": null },
+            { "name": "sourceb", "type": "Table", "value": null },
+            { "name": "sourcec", "type": "Table", "value": null },
+            { "name": "sql", "type": "StringSql", "value": "SELECT borough_name FROM `$a` LIMIT 1" }
+          ],
+          "outputs": [{ "name": "result", "type": "Table" }]
+        },
+        "position": { "x": 400, "y": 0 }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "src", "target": "bad-column", "sourceHandle": "out", "targetHandle": "sourcea" }
+    ]
+  }
+}

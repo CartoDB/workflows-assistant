@@ -1,0 +1,21 @@
+{
+  "title": "Tier-0: unknown component name",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "nodes": [
+      {
+        "id": "frob",
+        "type": "generic",
+        "position": { "x": 0, "y": 0 },
+        "data": {
+          "name": "native.frobnicate",
+          "version": "1",
+          "inputs": []
+        }
+      }
+    ],
+    "edges": []
+  }
+}

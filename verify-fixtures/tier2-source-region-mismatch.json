@@ -1,0 +1,24 @@
+{
+  "title": "Tier-2 (--verify=sources): source region differs from connection tempLocation region",
+  "description": "Picks a BigQuery public dataset hosted in EU. Pair with a connection whose tempLocation lives in us-east1 (e.g. 000-dvicente). The Tier-2 region check warns BEFORE the SQL probe — runtime would fail with 'Dataset … was not found in location US'.",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "nodes": [
+      {
+        "id": "src",
+        "type": "source",
+        "position": { "x": 0, "y": 0 },
+        "data": {
+          "id": "bigquery-public-data.london_bicycles.cycle_hire",
+          "type": "table",
+          "inputs": [
+            { "name": "source", "type": "String", "value": "bigquery-public-data.london_bicycles.cycle_hire" }
+          ]
+        }
+      }
+    ],
+    "edges": []
+  }
+}

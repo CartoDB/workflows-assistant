@@ -1,0 +1,10 @@
+{
+  "title": "Tier-0: unknown connectionProvider",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "athena",
+    "nodes": [],
+    "edges": []
+  }
+}

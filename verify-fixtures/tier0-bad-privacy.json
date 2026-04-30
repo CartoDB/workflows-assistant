@@ -1,0 +1,11 @@
+{
+  "title": "Tier-0: privacy outside the allow-list",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "privacy": "secret",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "nodes": [],
+    "edges": []
+  }
+}

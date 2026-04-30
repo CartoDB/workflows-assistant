@@ -1,0 +1,29 @@
+{
+  "title": "Tier-1: customsql body has a syntax error (missing FROM)",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "variables": [],
+    "nodes": [
+      {
+        "id": "syntax-error",
+        "type": "generic",
+        "data": {
+          "name": "native.customsql",
+          "version": "2.0.0",
+          "label": "Broken SQL",
+          "inputs": [
+            { "name": "sourcea", "type": "Table", "value": null },
+            { "name": "sourceb", "type": "Table", "value": null },
+            { "name": "sourcec", "type": "Table", "value": null },
+            { "name": "sql", "type": "StringSql", "value": "SELECT 1 AS x WHERE FROM `carto-demo-data.demo_tables.nyc_collisions`" }
+          ],
+          "outputs": [{ "name": "result", "type": "Table" }]
+        },
+        "position": { "x": 0, "y": 0 }
+      }
+    ],
+    "edges": []
+  }
+}

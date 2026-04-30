@@ -1,0 +1,47 @@
+{
+  "title": "Tier-1: customsql references a column the upstream does not expose",
+  "description": "synthetic-source emits {h3, value}; downstream selects `nonexistent_column` — Tier-1 schema trace surfaces 'Unrecognized name: nonexistent_column' enhanced with 'Available columns: h3, value'.",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "variables": [],
+    "nodes": [
+      {
+        "id": "synthetic-source",
+        "type": "generic",
+        "data": {
+          "name": "native.customsql",
+          "version": "2.0.0",
+          "inputs": [
+            { "name": "sourcea", "type": "Table", "value": null },
+            { "name": "sourceb", "type": "Table", "value": null },
+            { "name": "sourcec", "type": "Table", "value": null },
+            { "name": "sql", "type": "StringSql", "value": "SELECT '8928308280fffff' AS h3, 1.0 AS value" }
+          ],
+          "outputs": [{ "name": "result", "type": "Table" }]
+        },
+        "position": { "x": 0, "y": 0 }
+      },
+      {
+        "id": "hallucinate",
+        "type": "generic",
+        "data": {
+          "name": "native.customsql",
+          "version": "2.0.0",
+          "inputs": [
+            { "name": "sourcea", "type": "Table", "value": null },
+            { "name": "sourceb", "type": "Table", "value": null },
+            { "name": "sourcec", "type": "Table", "value": null },
+            { "name": "sql", "type": "StringSql", "value": "SELECT h3, nonexistent_column FROM `$a`" }
+          ],
+          "outputs": [{ "name": "result", "type": "Table" }]
+        },
+        "position": { "x": 400, "y": 0 }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "synthetic-source", "target": "hallucinate", "sourceHandle": "result", "targetHandle": "sourcea" }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "title": "Tier-1: downstream node skipped because upstream's schema trace failed",
+  "description": "broken-upstream emits invalid SQL; chained downstream gets a SCHEMA_TRACE_SKIPPED with reason 'upstream node X failed' instead of cascading into a misleading SQL error.",
+  "connectionId": "97f4f0d4-4299-4ede-897a-9317543cc67c",
+  "config": {
+    "schemaVersion": "1.0.0",
+    "connectionProvider": "bigquery",
+    "variables": [],
+    "nodes": [
+      {
+        "id": "broken-upstream",
+        "type": "generic",
+        "data": {
+          "name": "native.customsql",
+          "version": "2.0.0",
+          "inputs": [
+            { "name": "sourcea", "type": "Table", "value": null },
+            { "name": "sourceb", "type": "Table", "value": null },
+            { "name": "sourcec", "type": "Table", "value": null },
+            { "name": "sql", "type": "StringSql", "value": "SELECT FROM WHERE" }
+          ],
+          "outputs": [{ "name": "result", "type": "Table" }]
+        },
+        "position": { "x": 0, "y": 0 }
+      },
+      {
+        "id": "downstream",
+        "type": "generic",
+        "data": {
+          "name": "native.customsql",
+          "version": "2.0.0",
+          "inputs": [
+            { "name": "sourcea", "type": "Table", "value": null },
+            { "name": "sourceb", "type": "Table", "value": null },
+            { "name": "sourcec", "type": "Table", "value": null },
+            { "name": "sql", "type": "StringSql", "value": "SELECT * FROM `$a`" }
+          ],
+          "outputs": [{ "name": "result", "type": "Table" }]
+        },
+        "position": { "x": 400, "y": 0 }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "broken-upstream", "target": "downstream", "sourceHandle": "result", "targetHandle": "sourcea" }
+    ]
+  }
+}
