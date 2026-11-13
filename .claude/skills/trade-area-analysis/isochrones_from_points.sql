@@ -38,7 +38,7 @@ CREATE OR REPLACE PROCEDURE
       BEGIN
         CALL `carto-un.carto`.CREATE_ISOLINES(
             'https://gcp-us-east1.api.carto.com',
-            'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfMno2M205bDQiLCJqdGkiOiI2MGU4NmQ2YyJ9.nPU0w6KFoIkgKUktokkwFUJl7vRETQwXIhVFQTcvZW0',
+            'YOUR_CARTO_ACCESS_TOKEN',
             'carto-dw-ac-2z63m9l4.workflows_temp_ernesto_exampleworkflows_38118196.WORKFLOW_363a752d8a50e536_db57dbebbf915ed7_match',
             'carto-dw-ac-2z63m9l4.workflows_temp_ernesto_exampleworkflows_38118196.WORKFLOW_363a752d8a50e536_d26cdf53b539fb04_result',
             'geom',

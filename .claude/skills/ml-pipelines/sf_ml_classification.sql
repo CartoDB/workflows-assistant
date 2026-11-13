@@ -20,7 +20,7 @@ CREATE OR REPLACE PROCEDURE
         'TEAM_DB_DATA_SCIENCE.WORKFLOWS_TEMP.WORKFLOW_859FF7384F823C66_1055200DE598989B_RESULT',
         '{"autoguessing": true}',
         'https://gcp-us-east1.api.carto.com',
-        'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfN3hoZnd5bWwiLCJqdGkiOiJmMjM5MGEyZCJ9.cqJIaXUUYMTkCdithdRLcbUvg-z1Nyvca4O-dUHwHB8'
+        'YOUR_CARTO_ACCESS_TOKEN'
       );
     END;
     BEGIN

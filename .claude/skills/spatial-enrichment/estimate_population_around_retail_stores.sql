@@ -44,7 +44,7 @@ BEGIN
     BEGIN
     CALL `carto-un.carto`.CREATE_ISOLINES(
       'https://gcp-us-east1.api.carto.com',
-      'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfamZqam9mNW0iLCJqdGkiOiI0NGE3NzFlMyJ9.u6c7uX-KB5kE4VOXF4v6gPe-dXYI5OYp4-mdi3nxajs',
+      'YOUR_CARTO_ACCESS_TOKEN',
       'SELECT * FROM `WORKFLOW_82a2ad6bb1e9c47f_07e305dd562a58bf_result`',
       tempOutputTable,
       'geom',
